@@ -1,538 +1,106 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>About Me</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:       #0b0c0e;
-      --surface:  #111316;
-      --border:   #1e2128;
-      --text:     #e8e4dc;
-      --muted:    #6b6f7a;
-      --accent:   #c9a96e;
-      --accent2:  #7ecfc4;
-      --serif:    'Cormorant Garamond', Georgia, serif;
-      --mono:     'DM Mono', monospace;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--serif);
-      font-size: 18px;
-      line-height: 1.65;
-      overflow-x: hidden;
-      cursor: none;
-    }
-
-    #cursor {
-      position: fixed; top: 0; left: 0;
-      width: 12px; height: 12px;
-      background: var(--accent);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: width .2s, height .2s, background .2s;
-    }
-    #cursor.big {
-      width: 36px; height: 36px;
-      background: rgba(201,169,110,.15);
-      border: 1px solid var(--accent);
-    }
-
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      opacity: .025;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 1.5rem 3rem;
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid transparent;
-      transition: border-color .4s, background .4s, backdrop-filter .4s;
-    }
-    nav.scrolled {
-      border-color: var(--border);
-      background: rgba(11,12,14,.7);
-      backdrop-filter: blur(12px);
-    }
-    .nav-logo {
-      font-family: var(--serif); font-size: 1.1rem; letter-spacing: .15em;
-      color: var(--accent); font-weight: 300;
-    }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-    .nav-links a {
-      font-family: var(--mono); font-size: .72rem; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--muted);
-      text-decoration: none;
-      transition: color .3s;
-    }
-    .nav-links a:hover { color: var(--text); }
-
-    #hero {
-      min-height: 100vh;
-      display: grid; grid-template-columns: 1fr 1fr;
-      position: relative; z-index: 1;
-    }
-    .hero-left {
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 6rem 3rem 5rem 3rem;
-      border-right: 1px solid var(--border);
-    }
-    .hero-eyebrow {
-      font-family: var(--mono); font-size: .7rem; letter-spacing: .2em;
-      text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem;
-      opacity: 0; animation: fadeUp .8s .3s forwards;
-    }
-    .hero-name {
-      font-size: clamp(3.5rem, 7vw, 6.5rem);
-      font-weight: 300; line-height: 1.0; letter-spacing: -.01em;
-      color: var(--text);
-      opacity: 0; animation: fadeUp .9s .5s forwards;
-    }
-    .hero-name em { font-style: italic; color: var(--accent); }
-    .hero-tagline {
-      margin-top: 2rem; max-width: 38ch;
-      font-size: 1.05rem; font-weight: 300; color: var(--muted);
-      opacity: 0; animation: fadeUp .9s .75s forwards;
-    }
-    .hero-cta {
-      margin-top: 3rem;
-      opacity: 0; animation: fadeUp .9s 1s forwards;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: .6rem;
-      padding: .75rem 1.6rem;
-      border: 1px solid var(--accent);
-      color: var(--accent); font-family: var(--mono);
-      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
-      text-decoration: none; background: transparent;
-      cursor: none;
-      transition: background .3s, color .3s;
-    }
-    .btn:hover { background: var(--accent); color: var(--bg); }
-    .btn .arr { transition: transform .3s; }
-    .btn:hover .arr { transform: translateX(4px); }
-
-    .hero-right {
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 6rem 3rem 5rem 3rem; gap: 2.5rem;
-    }
-    .hero-stat {
-      opacity: 0; animation: fadeUp .9s forwards;
-    }
-    .hero-stat:nth-child(1) { animation-delay: .8s; }
-    .hero-stat:nth-child(2) { animation-delay: 1s; }
-    .hero-stat:nth-child(3) { animation-delay: 1.2s; }
-    .stat-num {
-      font-size: 3rem; font-weight: 300; color: var(--accent);
-      line-height: 1; letter-spacing: -.02em;
-    }
-    .stat-label {
-      font-family: var(--mono); font-size: .7rem; letter-spacing: .15em;
-      text-transform: uppercase; color: var(--muted); margin-top: .3rem;
-    }
-
-    .scroll-hint {
-      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-      font-family: var(--mono); font-size: .65rem; letter-spacing: .2em;
-      text-transform: uppercase; color: var(--muted);
-      display: flex; flex-direction: column; align-items: center; gap: .5rem;
-      animation: fadeUp 1s 1.5s forwards; opacity: 0;
-    }
-    .scroll-line {
-      width: 1px; height: 40px; background: var(--muted);
-      animation: scrollLine 2s 2s infinite;
-    }
-
-    section { position: relative; z-index: 1; }
-    .section-inner {
-      max-width: 1200px; margin: 0 auto;
-      padding: 7rem 3rem;
-    }
-    .section-label {
-      font-family: var(--mono); font-size: .68rem; letter-spacing: .2em;
-      text-transform: uppercase; color: var(--accent);
-      margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;
-    }
-    .section-label::after {
-      content: ''; flex: 1; max-width: 60px;
-      height: 1px; background: var(--border);
-    }
-    .section-title {
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      font-weight: 300; line-height: 1.15; letter-spacing: -.01em;
-    }
-    .section-title em { font-style: italic; color: var(--accent); }
-
-    #about { border-top: 1px solid var(--border); }
-    .about-grid {
-      display: grid; grid-template-columns: 1fr 1.4fr;
-      gap: 5rem; margin-top: 4rem; align-items: start;
-    }
-    .about-image-wrap {
-      position: sticky; top: 7rem;
-      aspect-ratio: 3/4; overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .about-img-placeholder {
-      width: 100%; height: 100%;
-      background: var(--surface);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 1rem; color: var(--muted);
-    }
-    .about-img-placeholder .icon { font-size: 3rem; }
-    .about-img-placeholder small {
-      font-family: var(--mono); font-size: .65rem; letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-    .about-text p {
-      font-size: 1.1rem; font-weight: 300; color: var(--muted);
-      margin-bottom: 1.5rem; max-width: 55ch;
-    }
-    .about-text p strong { color: var(--text); font-weight: 400; }
-
-    .skills-grid {
-      margin-top: 2.5rem;
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem;
-    }
-    .skill-chip {
-      padding: .55rem 1rem;
-      border: 1px solid var(--border);
-      font-family: var(--mono); font-size: .7rem; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--muted);
-      transition: border-color .3s, color .3s;
-    }
-    .skill-chip:hover { border-color: var(--accent); color: var(--accent); }
-
-    #experience { border-top: 1px solid var(--border); }
-    .timeline { margin-top: 4rem; position: relative; }
-    .timeline::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 1px; background: var(--border);
-    }
-    .tl-item {
-      padding: 0 0 3.5rem 3rem; position: relative;
-      opacity: 0; transform: translateX(-20px);
-      transition: opacity .6s, transform .6s;
-    }
-    .tl-item.visible { opacity: 1; transform: none; }
-    .tl-dot {
-      position: absolute; left: -5px; top: .5rem;
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--bg); border: 1px solid var(--accent);
-    }
-    .tl-date {
-      font-family: var(--mono); font-size: .68rem; letter-spacing: .15em;
-      text-transform: uppercase; color: var(--accent); margin-bottom: .4rem;
-    }
-    .tl-role { font-size: 1.4rem; font-weight: 300; }
-    .tl-company { font-size: .95rem; color: var(--muted); margin-bottom: .6rem; }
-    .tl-desc { font-size: .95rem; color: var(--muted); max-width: 55ch; font-weight: 300; }
-
-    #projects { border-top: 1px solid var(--border); }
-    .projects-grid {
-      margin-top: 4rem;
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-      border: 1px solid var(--border);
-    }
-    .project-card {
-      background: var(--surface); padding: 2.5rem 2rem;
-      border-right: 1px solid var(--border);
-      position: relative; overflow: hidden;
-      opacity: 0; transform: translateY(20px);
-      transition: opacity .6s, transform .6s, background .3s;
-      cursor: none;
-    }
-    .project-card:last-child { border-right: none; }
-    .project-card.visible { opacity: 1; transform: none; }
-    .project-card::after {
-      content: ''; position: absolute;
-      inset: 0; background: var(--accent);
-      opacity: 0; transition: opacity .3s;
-    }
-    .project-card:hover::after { opacity: .04; }
-    .project-num {
-      font-family: var(--mono); font-size: .65rem; letter-spacing: .2em;
-      color: var(--muted); margin-bottom: 2rem;
-    }
-    .project-title { font-size: 1.3rem; font-weight: 300; margin-bottom: .7rem; }
-    .project-desc { font-size: .9rem; color: var(--muted); font-weight: 300; margin-bottom: 1.5rem; }
-    .project-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
-    .tag {
-      padding: .2rem .6rem;
-      border: 1px solid var(--border);
-      font-family: var(--mono); font-size: .6rem; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--muted);
-    }
-
-    #contact { border-top: 1px solid var(--border); }
-    .contact-inner { max-width: 700px; }
-    .contact-big {
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 300; line-height: 1.1;
-      margin-top: 1.5rem; margin-bottom: 2.5rem;
-    }
-    .contact-big em { font-style: italic; color: var(--accent); }
-    .contact-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-    .contact-link {
-      font-family: var(--mono); font-size: .72rem; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--muted);
-      text-decoration: none;
-      padding-bottom: .2rem;
-      border-bottom: 1px solid var(--border);
-      transition: color .3s, border-color .3s;
-      cursor: none;
-    }
-    .contact-link:hover { color: var(--accent); border-color: var(--accent); }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 2rem 3rem;
-      display: flex; justify-content: space-between; align-items: center;
-      position: relative; z-index: 1;
-    }
-    footer p {
-      font-family: var(--mono); font-size: .65rem; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .footer-accent { color: var(--accent); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: none; }
-    }
-    @keyframes scrollLine {
-      0%   { transform: scaleY(0); transform-origin: top; }
-      50%  { transform: scaleY(1); transform-origin: top; }
-      51%  { transform: scaleY(1); transform-origin: bottom; }
-      100% { transform: scaleY(0); transform-origin: bottom; }
-    }
-
-    @media (max-width: 900px) {
-      #hero { grid-template-columns: 1fr; }
-      .hero-right { border-top: 1px solid var(--border); flex-direction: row; flex-wrap: wrap; }
-      .about-grid { grid-template-columns: 1fr; }
-      .about-image-wrap { position: static; aspect-ratio: 4/3; }
-      .projects-grid { grid-template-columns: 1fr; }
-      .project-card { border-right: none; border-bottom: 1px solid var(--border); }
-      nav { padding: 1.2rem 1.5rem; }
-      .section-inner { padding: 5rem 1.5rem; }
-      footer { flex-direction: column; gap: .5rem; padding: 1.5rem; }
-    }
-  </style>
-</head>
-<body>
-
-<div id="cursor"></div>
-
-<nav id="nav">
-  <div class="nav-logo">Max Muster</div>
-  <ul class="nav-links">
-    <li><a href="#about">Über mich</a></li>
-    <li><a href="#experience">Erfahrung</a></li>
-    <li><a href="#projects">Projekte</a></li>
-    <li><a href="#contact">Kontakt</a></li>
-  </ul>
-</nav>
-
-<section id="hero">
-  <div class="hero-left">
-    <p class="hero-eyebrow">📍 Österreich — Verfügbar für Projekte</p>
-    <h1 class="hero-name">Max<br><em>Muster</em></h1>
-    <p class="hero-tagline">Designer &amp; Entwickler. Ich erschaffe digitale Erlebnisse, die Eindruck hinterlassen.</p>
-    <div class="hero-cta">
-      <a href="#contact" class="btn">Kontakt aufnehmen <span class="arr">→</span></a>
-    </div>
-  </div>
-  <div class="hero-right">
-    <div class="hero-stat">
-      <div class="stat-num">5+</div>
-      <div class="stat-label">Jahre Erfahrung</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-num">40+</div>
-      <div class="stat-label">Projekte abgeschlossen</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-num">20+</div>
-      <div class="stat-label">Zufriedene Kunden</div>
-    </div>
-  </div>
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
-
-<section id="about">
-  <div class="section-inner">
-    <p class="section-label">01 — Über mich</p>
-    <h2 class="section-title">Wer steckt<br><em>dahinter?</em></h2>
-    <div class="about-grid">
-      <div class="about-image-wrap">
-        <div class="about-img-placeholder">
-          <span class="icon">🧑‍💻</span>
-          <small>Dein Foto hier</small>
+<html style="font-size: 16px;" lang="de"><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="Unser Weg, Dienstleistungen des Unternehmens, Bauen Sie großartige Produkte, Die richtigen Sachen machen, In Kontakt kommen, Erhöhen Sie Ihre Marke">
+    <meta name="description" content="">
+    <title>Seite 2</title>
+    <link rel="stylesheet" href="nicepage.css" media="screen">
+<link rel="stylesheet" href="index.css" media="screen">
+    <script class="u-script" type="text/javascript" src="jquery.js" defer=""></script>
+    <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
+    <meta name="generator" content="Nicepage 8.4.6, nicepage.com">
+    
+    
+    
+    
+    <link id="u-page-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800">
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "",
+		"url": "/",
+		"logo": "images/default-logo.png"
+}</script>
+    <meta name="theme-color" content="#478ac9">
+    <meta property="og:title" content="Seite 2">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="/">
+  <meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
+  <body data-home-page="https://website6633796.nicepage.io/Seite-2.html?version=ffc08776-0abb-9552-344a-6da73b13d362" data-home-page-title="Seite 2" data-path-to-root="./" data-include-products="false" class="u-body u-clearfix u-xl-mode" data-lang="de"><header class="u-clearfix u-header u-header" id="header"><div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="#" class="u-image u-logo u-image-1">
+          <img src="images/default-logo.png" class="u-logo-image u-logo-image-1">
+        </a>
+        <nav class="u-menu u-menu-one-level u-offcanvas u-menu-1" role="navigation" aria-label="Menu navigation">
+          <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
+            <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-top-bottom-menu-spacing u-hamburger-link u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="#" tabindex="-1" aria-label="Open menu" aria-controls="b211">
+              <svg class="u-svg-link" viewBox="0 0 24 24"><use xlink:href="#menu-hamburger"></use></svg>
+              <svg class="u-svg-content" version="1.1" id="menu-hamburger" viewBox="0 0 16 16" x="0px" y="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><rect y="1" width="16" height="2"></rect><rect y="7" width="16" height="2"></rect><rect y="13" width="16" height="2"></rect>
+</g></svg>
+            </a>
+          </div>
+          <div class="u-custom-menu u-nav-container">
+            <ul class="u-nav u-unstyled u-nav-1" role="menubar"><li role="none" class="u-nav-item"><a tabindex="-1" role="menuitem" class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base u-nav-link-2" href="xxhumandevxx.github.io" aria-haspopup="true">Zurück zur Normalen Edition</a>
+</li></ul>
+          </div>
+          <div class="u-custom-menu u-nav-container-collapse" id="b211" role="region" aria-label="Menu panel">
+            <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
+              <div class="u-inner-container-layout u-sidenav-overflow">
+                <div class="u-menu-close" tabindex="-1" aria-label="Close menu"></div>
+                <ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-2" role="menubar"><li role="none" class="u-nav-item"><a tabindex="-1" role="menuitem" class="u-button-style u-nav-link" href="xxhumandevxx.github.io" aria-haspopup="true">Zurück zur Normalen Edition</a>
+</li></ul>
+              </div>
+            </div>
+            <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
+          </div>
+        </nav>
+      </div></header>
+    <section class="u-clearfix u-container-align-center-lg u-container-align-center-md u-container-align-center-sm u-container-align-center-xs u-image u-shading u-section-1" data-image-width="2000" data-image-height="1333" id="block-3">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h1 class="u-align-center u-text u-title u-text-1">PhilippWeb​ Classmate Edition</h1>
+      </div>
+    </section>
+    <section class="u-align-center u-clearfix u-white u-section-2" id="block-6">
+      <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-middle-xs u-sheet-1">
+        <h2 class="u-align-center u-text u-text-default u-text-1">Games </h2>
+        <p class="u-align-center u-text u-text-2">Games und mehr, natürlich gemacht von mir und ohne Werbung. </p>
+        <div class="u-expanded-width u-list u-list-1">
+          <div class="u-repeater u-repeater-1">
+            <div class="u-align-center u-container-align-center u-container-style u-custom-item u-list-item u-palette-1-dark-1 u-repeater-item u-shape-rectangle u-list-item-1">
+              <div class="u-container-layout u-similar-container u-valign-top u-container-layout-1">
+                <img alt="" class="u-expanded-width u-image u-image-default u-image-1" data-image-width="2000" data-image-height="1333" src="images/default-image-6.jpg">
+                <h4 class="u-align-center u-text u-text-default u-text-3">VoidDash </h4>
+                <p class="u-align-center u-text u-text-4">Steure mit deiner Maus ein Raumschiff das von Aliens angegriffen wird. Schaffst du 30000 Punkte ? </p>
+                <a href="example.com" class="u-active-white u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-right-xl u-border-1 u-border-active-white u-border-hover-white u-border-white u-btn u-button-style u-hover-white u-none u-btn-1" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">Spielen </a>
+              </div>
+            </div>
+            <div class="u-align-center u-container-align-center u-container-align-center-lg u-container-align-center-md u-container-align-center-sm u-container-align-center-xs u-container-style u-custom-item u-list-item u-palette-1-base u-repeater-item u-shape-rectangle u-list-item-2">
+              <div class="u-container-layout u-similar-container u-valign-top u-container-layout-2">
+                <img alt="" class="u-expanded-width u-image u-image-default u-image-2" data-image-width="2000" data-image-height="1333" src="images/default-image-6.jpg">
+                <h4 class="u-align-center u-text u-text-default u-text-5">SandSurfer </h4>
+                <p class="u-align-center u-text u-text-6">Sample text. Click to select the text box. Click again or double click to start editing the text.</p>
+                <a href="#" class="u-active-white u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-right-xl u-border-1 u-border-active-white u-border-hover-white u-border-white u-btn u-button-style u-hover-white u-none u-btn-2" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">Noch nicht fertig ... </a>
+              </div>
+            </div>
+            <div class="u-align-center u-container-align-center u-container-style u-custom-item u-list-item u-palette-1-light-1 u-repeater-item u-shape-rectangle u-list-item-3">
+              <div class="u-container-layout u-similar-container u-valign-top u-container-layout-3">
+                <img alt="" class="u-expanded-width u-image u-image-default u-image-3" data-image-width="2000" data-image-height="1333" src="images/default-image-6.jpg">
+                <h4 class="u-align-center u-text u-text-default u-text-7">GeometryDash </h4>
+                <p class="u-align-center u-text u-text-8">Was soll ich sagen, es ist einfach GeometryDash aber auf Wish bestellt. </p>
+                <a href="#" class="u-active-white u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-right-xl u-border-1 u-border-active-white u-border-hover-white u-border-white u-btn u-button-style u-hover-white u-none u-btn-3" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">Noch nicht fertig ... </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="about-text">
-        <p>Hallo! Ich bin <strong>Max Muster</strong>, ein leidenschaftlicher Designer und Entwickler aus <strong>Österreich</strong>. Ich verbinde kreatives Denken mit technischer Präzision.</p>
-        <p>Meine Arbeit dreht sich darum, <strong>sinnvolle digitale Produkte</strong> zu schaffen — von der ersten Idee bis zum fertigen Produkt. Dabei achte ich auf jedes Detail.</p>
-        <p>Wenn ich nicht am Computer sitze, findet man mich beim <strong>Wandern in den Alpen</strong>, beim Lesen oder beim Entdecken neuer Technologien.</p>
-        <div class="skills-grid">
-          <div class="skill-chip">HTML / CSS</div>
-          <div class="skill-chip">JavaScript</div>
-          <div class="skill-chip">Python</div>
-          <div class="skill-chip">React</div>
-          <div class="skill-chip">UI / UX Design</div>
-          <div class="skill-chip">Figma</div>
-          <div class="skill-chip">Node.js</div>
-          <div class="skill-chip">SQL</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="experience">
-  <div class="section-inner">
-    <p class="section-label">02 — Erfahrung</p>
-    <h2 class="section-title">Mein <em>Werdegang</em></h2>
-    <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-date">2022 — heute</div>
-        <div class="tl-role">Senior Frontend Entwickler</div>
-        <div class="tl-company">Tech GmbH · Wien, Österreich</div>
-        <div class="tl-desc">Entwicklung moderner Web-Applikationen mit React und TypeScript. Enge Zusammenarbeit mit Design und Product Teams.</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-date">2020 — 2022</div>
-        <div class="tl-role">UI/UX Designer</div>
-        <div class="tl-company">Kreativagentur · Graz, Österreich</div>
-        <div class="tl-desc">Gestaltung von Nutzeroberflächen für Start-ups und mittelständische Unternehmen. Prototyping und User Testing.</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-date">2018 — 2020</div>
-        <div class="tl-role">Junior Webentwickler</div>
-        <div class="tl-company">Freelance · Remote</div>
-        <div class="tl-desc">Realisierung von Kundenprojekten – von der Landingpage bis zum E-Commerce-Shop.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="projects">
-  <div class="section-inner">
-    <p class="section-label">03 — Projekte</p>
-    <h2 class="section-title">Ausgewählte <em>Arbeiten</em></h2>
-    <div class="projects-grid">
-      <div class="project-card">
-        <div class="project-num">001</div>
-        <div class="project-title">Portfolio Redesign</div>
-        <div class="project-desc">Vollständige Neugestaltung eines Fotografie-Portfolios mit Fokus auf visuelle Wirkung.</div>
-        <div class="project-tags">
-          <span class="tag">React</span><span class="tag">CSS</span><span class="tag">Framer</span>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="project-num">002</div>
-        <div class="project-title">Dashboard App</div>
-        <div class="project-desc">Analytics-Dashboard mit Echtzeit-Daten und interaktiven Charts für ein FinTech-Start-up.</div>
-        <div class="project-tags">
-          <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">D3.js</span>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="project-num">003</div>
-        <div class="project-title">E-Commerce Plattform</div>
-        <div class="project-desc">Maßgeschneiderte Shop-Lösung mit nahtloser Checkout-Erfahrung und mobilem Design.</div>
-        <div class="project-tags">
-          <span class="tag">Next.js</span><span class="tag">Stripe</span><span class="tag">Tailwind</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="contact">
-  <div class="section-inner">
-    <p class="section-label">04 — Kontakt</p>
-    <div class="contact-inner">
-      <div class="contact-big">Lass uns etwas <em>Großartiges</em> zusammen bauen.</div>
-      <div class="contact-links">
-        <a href="mailto:hallo@maxmuster.at" class="contact-link">✉ hallo@maxmuster.at</a>
-        <a href="#" class="contact-link">LinkedIn</a>
-        <a href="#" class="contact-link">GitHub</a>
-        <a href="#" class="contact-link">Instagram</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <p>© 2026 <span class="footer-accent">Max Muster</span></p>
-  <p>Gebaut mit ♥ in <span class="footer-accent">Österreich</span></p>
-</footer>
-
-<script>
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top  = e.clientY + 'px';
-  });
-  document.querySelectorAll('a, button, .project-card, .skill-chip').forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('big'));
-    el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
-  });
-
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  });
-
-  const revealEls = document.querySelectorAll('.tl-item, .project-card');
-  const io = new IntersectionObserver(entries => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 120);
-        io.unobserve(e.target);
-      }
-    });
-  }, { threshold: .15 });
-  revealEls.forEach(el => io.observe(el));
-
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
-  const sectionObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        navLinks.forEach(a => a.style.color = '');
-        const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
-        if (link) link.style.color = 'var(--accent)';
-      }
-    });
-  }, { threshold: .5 });
-  sections.forEach(s => sectionObserver.observe(s));
-</script>
-</body>
-</html>
+    </section>
+    
+    
+    
+    <footer class="u-align-center u-clearfix u-container-align-center u-footer u-grey-80 u-footer" id="footer"><div class="u-clearfix u-sheet u-sheet-1">
+        <p class="u-small-text u-text u-text-variant u-text-1">Du hast das Ende dieser Website erreicht :3 </p>
+      </div></footer>
+    <section class="u-backlink u-clearfix u-grey-80"> This <a href="https://nicepage.com/one-page-template">One Page Template</a> was created with Nicepage Builder 
+    </section>
+  
+</body></html>
