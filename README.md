@@ -1,4 +1,4 @@
- <meta http-equiv="Refresh" content="0;url=https://xxhumandevxx.github.io/classmate_website/home_page/index.html">
+ <meta http-equiv="Refresh" content="0;url=https://xxhumandevxx.github.io/codespace/games/void_dash.html">
 
 <h1> Whoops, sieht so aus als würde die Website nicht laden :/ </h1>
 <h3> Versuche die Website erneut zu laden.</h3>
