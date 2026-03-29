@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Interactive Human Real</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: radial-gradient(circle, #111, #000);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Kopf */
+.head {
+  width: 180px;
+  height: 220px;
+  background: radial-gradient(circle at 50% 30%, #f1c27d, #8d5524);
+  border-radius: 50%;
+  position: relative;
+  box-shadow:
+    inset -20px -30px 40px rgba(0,0,0,0.5),
+    0 20px 40px rgba(0,0,0,0.8);
+}
+
+/* Augen */
+.eye {
+  width: 45px;
+  height: 30px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 80px;
+  overflow: hidden;
+  transition: height 0.15s;
+}
+
+.eye.left { left: 35px; }
+.eye.right { right: 35px; }
+
+/* Pupille */
+.pupil {
+  width: 14px;
+  height: 14px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  top: 8px;
+  left: 15px;
+  transition: transform 0.05s;
+}
+
+/* Augenlid Effekt */
+.eye.blink {
+  height: 4px;
+}
+
+/* Nase */
+.nose {
+  width: 30px;
+  height: 40px;
+  background: linear-gradient(to bottom, #e0ac69, #8d5524);
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+}
+
+/* Mund */
+.mouth {
+  width: 60px;
+  height: 20px;
+  background: #5a2a2a;
+  border-radius: 0 0 50px 50px;
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+</style>
+</head>
+<body>
+
+<div class="head" id="head">
+  <div class="eye left" id="eyeL">
+    <div class="pupil"></div>
+  </div>
+
+  <div class="eye right" id="eyeR">
+    <div class="pupil"></div>
+  </div>
+
+  <div class="nose"></div>
+  <div class="mouth"></div>
+</div>
+
+<script>
+const pupils = document.querySelectorAll(".pupil");
+
+// Maus Tracking (BEGRENZT → bleibt im Auge)
+document.addEventListener("mousemove", (e) => {
+  pupils.forEach(pupil => {
+    const eye = pupil.parentElement;
+    const rect = eye.getBoundingClientRect();
+
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
+
+    // Mittelpunkt Auge
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    let dx = x - centerX;
+    let dy = y - centerY;
+
+    // Begrenzung (damit Pupille im Auge bleibt)
+    const max = 8;
+    dx = Math.max(-max, Math.min(max, dx / 5));
+    dy = Math.max(-max, Math.min(max, dy / 5));
+
+    pupil.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+});
+
+// Klick auf Auge = Schmerz-Blinzeln
+document.getElementById("eyeL").addEventListener("click", (e) => {
+  blink(e.currentTarget);
+});
+document.getElementById("eyeR").addEventListener("click", (e) => {
+  blink(e.currentTarget);
+});
+
+function blink(eye) {
+  eye.classList.add("blink");
+
+  setTimeout(() => {
+    eye.classList.remove("blink");
+  }, 200);
+}
+
+// zufälliges natürliches Blinzeln
+setInterval(() => {
+  blink(document.getElementById("eyeL"));
+  blink(document.getElementById("eyeR"));
+}, 4000);
+
+</script>
+
+</body>
+</html>
